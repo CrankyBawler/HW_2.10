@@ -1,9 +1,11 @@
 package pro.sky.HW_2._0.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pro.sky.HW_2._0.Entity.Employee;
 import pro.sky.HW_2._0.exception.EmployeeAlreadyAddedException;
 import pro.sky.HW_2._0.exception.EmployeeNotFoundExection;
+import pro.sky.HW_2._0.exception.InvalidInputException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +30,8 @@ public class EmployeeServiceImp  implements EmployeeService{
 
     @Override
     public Employee add(String firstName, String lastName, int salary, int department) {
+
+        validateInput(firstName, lastName);
         Employee employee = new Employee(firstName, lastName, salary, department);
         if (employees.containsKey(employee.getFullName())) {
             throw new EmployeeAlreadyAddedException();
@@ -40,6 +44,8 @@ public class EmployeeServiceImp  implements EmployeeService{
 
     @Override
     public Employee remove(String firstName, String lastName) {
+
+        validateInput(firstName, lastName);
         var key = (firstName + " " + lastName);
         if (employees.containsKey(key)) {
             return employees.remove(key);
@@ -51,6 +57,7 @@ public class EmployeeServiceImp  implements EmployeeService{
 
     @Override
     public Employee find(String firstName, String lastName) {
+        validateInput(firstName, lastName);
         var key = (firstName + " " + lastName);
         if (employees.containsKey(key)) {
             return employees.get(key);
@@ -61,6 +68,12 @@ public class EmployeeServiceImp  implements EmployeeService{
     @Override
     public Collection<Employee> findAll() {
         return Collections.unmodifiableCollection(employees.values());
+    }
+
+    private void validateInput(String firstName, String lastName) {
+        if (!(StringUtils.isAlpha(firstName) && StringUtils.isAlpha(lastName))) {
+            throw new InvalidInputException();
+        }
     }
 
 }
